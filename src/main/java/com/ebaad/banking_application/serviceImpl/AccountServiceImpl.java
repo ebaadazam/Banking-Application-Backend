@@ -1,7 +1,11 @@
 package com.ebaad.banking_application.serviceImpl;
 
 import com.ebaad.banking_application.dto.AccountDTO;
+import com.ebaad.banking_application.dto.DebitCardDTO;
+import com.ebaad.banking_application.dto.SocialLinkDTO;
 import com.ebaad.banking_application.entity.Account;
+import com.ebaad.banking_application.entity.DebitCard;
+import com.ebaad.banking_application.entity.SocialLink;
 import com.ebaad.banking_application.mapper.AccountMapper;
 import com.ebaad.banking_application.repository.AccountRepository;
 import com.ebaad.banking_application.service.AccountService;
@@ -16,6 +20,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
+
+//    @Autowired
+//    private UserRepository userRepository;
 
     // method to create an account
     @Override
@@ -39,9 +46,30 @@ public class AccountServiceImpl implements AccountService {
     // method to show an account through id
     @Override
     public AccountDTO getAccountById(Long id) {
+        // Get the authenticated user's username and roles
+//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+//        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication()
+//                .getAuthorities().stream()
+//                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
         Account account = accountRepository
                 .findById(id)
                 .orElseThrow(() -> new InvalidIdException("Incorrect ID is given or ID doesn't exists!"));
+
+
+        // Fetch the authenticated user's account to get their ID
+//        User authenticatedUser = userRepository.findByUsername(username)
+//                .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+
+        // Allow ADMIN to access any account, but restrict USER to their own account
+//        if (!isAdmin && !account.getId().equals(authenticatedUser.getId())) {
+//            try {
+//                throw new AccessDeniedException("You are not authorized to access this account!");
+//            } catch (AccessDeniedException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+
         AccountDTO accountDTO = AccountMapper.mapToAccountDTO(account);
         return accountDTO;
     }
@@ -49,6 +77,17 @@ public class AccountServiceImpl implements AccountService {
     // method to show an account through name
     @Override
     public AccountDTO getAccountByName(String accountHolderName) {
+        // Get the authenticated user's username and roles
+//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+//        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication()
+//                .getAuthorities().stream()
+//                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        // Allow ADMIN to access any account, but restrict USER to their own account
+//        if (!isAdmin && !accountHolderName.equals(username)) {
+//                throw new AccessNotAllowedException("You are not authorized to access this account!");
+//        }
+
         Account account = accountRepository
                 .findByAccountHolderName(accountHolderName)
                 .orElseThrow(()->new InvalidNameException("Account with name '" + accountHolderName + "' does not exists!"));
@@ -65,7 +104,61 @@ public class AccountServiceImpl implements AccountService {
         account.setAccountHolderName(accountDTO.getAccountHolderName());
         account.setIfscCode(accountDTO.getIfscCode());
         account.setAccountNumber(accountDTO.getAccountNumber());
-        account.setBalance(accountDTO.getBalance());
+        account.setAccountType(accountDTO.getAccountType());
+        account.setBranchName(accountDTO.getBranchName());
+        account.setPhoneNumber(accountDTO.getPhoneNumber());
+        account.setEmail(accountDTO.getEmail());
+        account.setAccountStatus(accountDTO.getAccountStatus());
+        account.setCreationDate(accountDTO.getCreationDate());
+        account.setLastUpdatedDate(accountDTO.getLastUpdatedDate());
+        account.setDesignation(accountDTO.getDesignation());
+        account.setAddress(accountDTO.getAddress());
+        account.setGender(accountDTO.getGender());
+
+        // For DebitCard
+        if (accountDTO.getDebitCard() != null) {
+            DebitCardDTO debitCardDTO = accountDTO.getDebitCard();
+            DebitCard debitCard = account.getDebitCard();
+            if (debitCard == null) {
+                debitCard = new DebitCard();
+                debitCard.setAccount(account); // Set the bidirectional relationship
+            }
+            debitCard.setCardNumber(debitCardDTO.getCardNumber());
+            debitCard.setCardName(debitCardDTO.getCardName());
+            debitCard.setValidity(debitCardDTO.getValidity());
+
+            account.setDebitCard(debitCard);
+        } else {
+            account.setDebitCard(null);
+        }
+
+        // Update SocialLinks
+        if (accountDTO.getSocialLinks() != null) {
+            SocialLinkDTO socialLinkDTO = accountDTO.getSocialLinks();
+            List<SocialLink> socialLinks = account.getSocialLinks();
+
+            // If socialLinks is empty, create a new SocialLink
+            if (socialLinks.isEmpty()) {
+                SocialLink socialLink = new SocialLink();
+                socialLink.setInstagram(socialLinkDTO.getInstagram());
+                socialLink.setFacebook(socialLinkDTO.getFacebook());
+                socialLink.setTwitter(socialLinkDTO.getTwitter());
+                socialLink.setWhatsApp(socialLinkDTO.getWhatsApp());
+                socialLink.setAccount(account); // Set the bidirectional relationship
+                socialLinks.add(socialLink);
+            } else {
+                // Update the existing SocialLink
+                SocialLink socialLink = socialLinks.get(0); // Assuming one-to-one relationship
+                socialLink.setInstagram(socialLinkDTO.getInstagram());
+                socialLink.setFacebook(socialLinkDTO.getFacebook());
+                socialLink.setTwitter(socialLinkDTO.getTwitter());
+                socialLink.setWhatsApp(socialLinkDTO.getWhatsApp());
+            }
+        } else {
+            // If socialLinks is null, remove all existing SocialLinks
+            account.getSocialLinks().clear();
+        }
+
         Account updatedAccount = accountRepository.save(account);
 
         AccountDTO acc = AccountMapper.mapToAccountDTO(updatedAccount);

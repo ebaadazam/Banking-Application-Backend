@@ -2,8 +2,12 @@ package com.ebaad.banking_application.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "accounts")
@@ -15,16 +19,15 @@ public class Account {
     @Column(name = "account_holder_name")
     private String accountHolderName;
 
-    @Column(name = "ifsc_code")
+    @Column(name = "ifsc_code", unique = true)
     private String ifscCode;
 
-    @Column(name = "account_number")
+    @Column(name = "account_number", unique = true)
     private double accountNumber;
 
     @Column(name = "account_balance")
     private double balance;
 
-    // additional
     @Column(name = "account_type")
     private String accountType;
 
@@ -39,11 +42,13 @@ public class Account {
     @Column(name = "account_status")
     private String accountStatus;
 
-    @Column(name = "creation_date")
+    @Column(name = "creation_date", updatable = false)
+    @CreationTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate creationDate;
 
     @Column(name = "last_updated_date")
+    @UpdateTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate lastUpdatedDate;
 
@@ -51,8 +56,16 @@ public class Account {
 
     private String address;
 
+    private String gender;
+
     @Column(name = "image_url")
     private String imageUrl;
+
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    private DebitCard debitCard;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SocialLink> socialLinks = new ArrayList<>();
 
     public Account() {
     }
@@ -60,7 +73,7 @@ public class Account {
     public Account(Long id, String accountHolderName, String ifscCode, double accountNumber, double balance,
                    String accountType, String branchName, String phoneNumber, String email,
                    String accountStatus, LocalDate creationDate, LocalDate lastUpdatedDate,
-                   String designation, String address, String imageUrl) {
+                   String designation, String address, String gender, String imageUrl) {
         this.id = id;
         this.accountHolderName = accountHolderName;
         this.ifscCode = ifscCode;
@@ -75,6 +88,7 @@ public class Account {
         this.lastUpdatedDate = lastUpdatedDate;
         this.designation = designation;
         this.address = address;
+        this.gender = gender;
         this.imageUrl = imageUrl;
     }
 
@@ -191,6 +205,14 @@ public class Account {
         this.address = address;
     }
 
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }
@@ -198,4 +220,21 @@ public class Account {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    public DebitCard getDebitCard() {
+        return debitCard;
+    }
+
+    public void setDebitCard(DebitCard debitCard) {
+        this.debitCard = debitCard;
+    }
+
+    public List<SocialLink> getSocialLinks() {
+        return socialLinks;
+    }
+
+    public void setSocialLinks(List<SocialLink> socialLinks) {
+        this.socialLinks = socialLinks;
+    }
+
 }

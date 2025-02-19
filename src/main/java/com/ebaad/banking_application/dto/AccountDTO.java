@@ -1,11 +1,11 @@
 package com.ebaad.banking_application.dto;
 
+import com.ebaad.banking_application.entity.SocialLink;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AccountDTO {
     private Long id;
@@ -24,7 +24,11 @@ public class AccountDTO {
     private LocalDate lastUpdatedDate;
     private String designation;
     private String address;
+    private String gender;
     private String imageUrl;
+    private DebitCardDTO debitCard;
+    private SocialLinkDTO socialLinks;
+
 
     public AccountDTO() {
     }
@@ -32,7 +36,7 @@ public class AccountDTO {
     public AccountDTO(Long id, String accountHolderName, String ifscCode, double accountNumber, double balance,
                    String accountType, String branchName, String phoneNumber, String email,
                    String accountStatus, LocalDate creationDate, LocalDate lastUpdatedDate,
-                   String designation, String address, String imageUrl) {
+                   String designation, String address, String gender, String imageUrl) {
         this.id = id;
         this.accountHolderName = accountHolderName;
         this.ifscCode = ifscCode;
@@ -47,8 +51,10 @@ public class AccountDTO {
         this.lastUpdatedDate = lastUpdatedDate;
         this.designation = designation;
         this.address = address;
+        this.gender = gender;
         this.imageUrl = imageUrl;
     }
+
 
     public Long getId() {
         return id;
@@ -163,6 +169,14 @@ public class AccountDTO {
         this.address = address;
     }
 
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }
@@ -170,4 +184,21 @@ public class AccountDTO {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    public DebitCardDTO getDebitCard() {
+        return debitCard;
+    }
+
+    public void setDebitCard(DebitCardDTO debitCard) {
+        this.debitCard = debitCard;
+    }
+
+    public SocialLinkDTO getSocialLinks(){
+        return socialLinks;
+    }
+
+    public void setSocialLinks(SocialLinkDTO socialLinks){
+        this.socialLinks = socialLinks;
+    }
+
 }

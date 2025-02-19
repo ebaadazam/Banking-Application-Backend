@@ -25,4 +25,10 @@ public class BankingExceptions {
             super(message);
         }
     }
+
+//    public static class AccessNotAllowedException extends RuntimeException {
+//        public AccessNotAllowedException(String message) {
+//            super(message);
+//        }
+//    }
 }
