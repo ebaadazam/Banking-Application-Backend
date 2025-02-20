@@ -1,10 +1,7 @@
 package com.ebaad.banking_application.service;
 
 import com.ebaad.banking_application.dto.AccountDTO;
-import com.ebaad.banking_application.entity.Account;
 import org.springframework.stereotype.Service;
-
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Service

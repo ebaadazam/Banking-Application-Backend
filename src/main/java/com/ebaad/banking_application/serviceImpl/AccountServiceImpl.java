@@ -21,9 +21,6 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
-//    @Autowired
-//    private UserRepository userRepository;
-
     // method to create an account
     @Override
     public AccountDTO createAccount(AccountDTO accountDTO) {
@@ -46,30 +43,9 @@ public class AccountServiceImpl implements AccountService {
     // method to show an account through id
     @Override
     public AccountDTO getAccountById(Long id) {
-        // Get the authenticated user's username and roles
-//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-//        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication()
-//                .getAuthorities().stream()
-//                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
-
         Account account = accountRepository
                 .findById(id)
                 .orElseThrow(() -> new InvalidIdException("Incorrect ID is given or ID doesn't exists!"));
-
-
-        // Fetch the authenticated user's account to get their ID
-//        User authenticatedUser = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
-
-        // Allow ADMIN to access any account, but restrict USER to their own account
-//        if (!isAdmin && !account.getId().equals(authenticatedUser.getId())) {
-//            try {
-//                throw new AccessDeniedException("You are not authorized to access this account!");
-//            } catch (AccessDeniedException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
-
         AccountDTO accountDTO = AccountMapper.mapToAccountDTO(account);
         return accountDTO;
     }
@@ -77,17 +53,6 @@ public class AccountServiceImpl implements AccountService {
     // method to show an account through name
     @Override
     public AccountDTO getAccountByName(String accountHolderName) {
-        // Get the authenticated user's username and roles
-//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-//        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication()
-//                .getAuthorities().stream()
-//                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
-
-        // Allow ADMIN to access any account, but restrict USER to their own account
-//        if (!isAdmin && !accountHolderName.equals(username)) {
-//                throw new AccessNotAllowedException("You are not authorized to access this account!");
-//        }
-
         Account account = accountRepository
                 .findByAccountHolderName(accountHolderName)
                 .orElseThrow(()->new InvalidNameException("Account with name '" + accountHolderName + "' does not exists!"));
@@ -171,9 +136,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository
                 .findById(id)
                 .orElseThrow(()->new InvalidIdException("Incorrect ID is given or ID doesn't exists!"));
-
         accountRepository.deleteById(id);
-
         AccountDTO accountDTO = AccountMapper.mapToAccountDTO(account);
         return accountDTO;
     }

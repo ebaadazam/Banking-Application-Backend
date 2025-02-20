@@ -1,7 +1,15 @@
 package com.ebaad.banking_application.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "debit_cards")
 public class DebitCard {
@@ -23,54 +31,4 @@ public class DebitCard {
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
 
-    public DebitCard() {
-    }
-
-    public DebitCard(Long id, String cardNumber, String cardName, String validity, Account account) {
-        this.id = id;
-        this.cardNumber = cardNumber;
-        this.cardName = cardName;
-        this.validity = validity;
-        this.account = account;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCardNumber() {
-        return cardNumber;
-    }
-
-    public void setCardNumber(String cardNumber) {
-        this.cardNumber = cardNumber;
-    }
-
-    public String getCardName() {
-        return cardName;
-    }
-
-    public void setCardName(String cardName) {
-        this.cardName = cardName;
-    }
-
-    public String getValidity() {
-        return validity;
-    }
-
-    public void setValidity(String validity) {
-        this.validity = validity;
-    }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
 }

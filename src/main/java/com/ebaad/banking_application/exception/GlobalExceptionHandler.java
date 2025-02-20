@@ -40,8 +40,4 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>("An error occurred: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-//    @ExceptionHandler(AccessNotAllowedException.class)
-//    public ResponseEntity<String> handleAccessNotAllowed(AccessNotAllowedException ex) {
-//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-//    }
 }
