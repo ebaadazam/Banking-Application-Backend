@@ -11,9 +11,12 @@ import com.ebaad.banking_application.repository.AccountRepository;
 import com.ebaad.banking_application.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.ebaad.banking_application.exception.BankingExceptions.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -123,9 +126,7 @@ public class AccountServiceImpl implements AccountService {
             // If socialLinks is null, remove all existing SocialLinks
             account.getSocialLinks().clear();
         }
-
         Account updatedAccount = accountRepository.save(account);
-
         AccountDTO acc = AccountMapper.mapToAccountDTO(updatedAccount);
         return acc;
     }

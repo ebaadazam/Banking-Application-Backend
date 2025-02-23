@@ -1,6 +1,7 @@
 package com.ebaad.banking_application.controller;
 
 import com.ebaad.banking_application.dto.AccountDTO;
+import com.ebaad.banking_application.entity.Account;
 import com.ebaad.banking_application.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -30,8 +31,12 @@ public class AccountController {
     // method to create an account
     @PostMapping
     public ResponseEntity<AccountDTO> createAccount(@RequestBody AccountDTO accountDTO){
-        AccountDTO createdAccount = accountService.createAccount(accountDTO);
-        return new ResponseEntity<>(createdAccount, HttpStatus.CREATED);
+        try {
+            AccountDTO createdAccount = accountService.createAccount(accountDTO);
+            return new ResponseEntity<>(createdAccount, HttpStatus.CREATED);
+        } catch(Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // method to show all accounts

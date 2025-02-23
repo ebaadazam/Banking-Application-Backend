@@ -26,6 +26,7 @@ public class AccountDTO {
     private String address;
     private String gender;
     private String imageUrl;
+    private byte[] imageDate;
     private DebitCardDTO debitCard;
     private SocialLinkDTO socialLinks;
 
