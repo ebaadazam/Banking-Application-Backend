@@ -29,6 +29,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public List<ContactDTO> getAllContacts() {
         List<Contact> contacts = contactRepository.findAll();
-        return contacts.stream().map((contact) -> ContactMapper.mapToContactDTO(contact)).collect(Collectors.toList());
+        return contacts.stream().map((contact) ->
+                ContactMapper.mapToContactDTO(contact)).collect(Collectors.toList());
     }
 }

@@ -32,6 +32,8 @@ public class AccountMapper {
                 accountDTO.getGender(),
                 accountDTO.getImageUrl()
         );
+        accountDTO.setImageUrl(account.getImageUrl());
+
         if (accountDTO.getDebitCard() != null) {
             DebitCardDTO debitCardDTO = accountDTO.getDebitCard();
             DebitCard debitCard = new DebitCard();
@@ -97,6 +99,7 @@ public class AccountMapper {
                 account.getGender(),
                 account.getImageUrl()
         );
+        account.setImageUrl(accountDTO.getImageUrl());
         accountDTO.setDebitCard(debitCardDTO);
         accountDTO.setSocialLinks(socialLinkDTO);
 

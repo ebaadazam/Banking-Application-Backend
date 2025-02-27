@@ -1,7 +1,6 @@
 package com.ebaad.banking_application.controller;
 
 import com.ebaad.banking_application.dto.AccountDTO;
-import com.ebaad.banking_application.entity.Account;
 import com.ebaad.banking_application.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -14,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,18 +26,26 @@ public class AccountController {
     @Autowired
     private AccountService accountService;
 
-    // method to create an account
-    @PostMapping
-    public ResponseEntity<AccountDTO> createAccount(@RequestBody AccountDTO accountDTO){
+    // method to create an account (with image)
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AccountDTO> createAccount(
+            @RequestPart("accountDTO") AccountDTO accountDTO,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
+            if (file != null && !file.isEmpty()) {
+                String imageUrl = saveImage(file);
+                accountDTO.setImageUrl(imageUrl);
+            }
+
             AccountDTO createdAccount = accountService.createAccount(accountDTO);
             return new ResponseEntity<>(createdAccount, HttpStatus.CREATED);
-        } catch(Exception e) {
+        } catch (Exception e) {
+            e.printStackTrace(); // Log the exception
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // method to show all accounts
+    // method to display all accounts
     @GetMapping
     public ResponseEntity<List<AccountDTO>> showAllAccounts(){
         List<AccountDTO> accounts = accountService.showAllAccounts();
@@ -60,12 +66,24 @@ public class AccountController {
         return new ResponseEntity<>(accountDTO, HttpStatus.OK);
     }
 
-    // method to update an account through id
-    @PutMapping("/{id}")
-    public ResponseEntity<AccountDTO> updateAccount(@PathVariable Long id,
-                                                    @RequestBody AccountDTO accountDTO) throws AccessDeniedException {
-        AccountDTO updatedAccount = accountService.updateAccount(id, accountDTO);
-        return new ResponseEntity<>(updatedAccount, HttpStatus.OK);
+    // method to update an account through id (image currently not updating)
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AccountDTO> updateAccount(
+            @PathVariable Long id,
+            @RequestPart("accountDTO") AccountDTO accountDTO,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+        try {
+            if (file != null && !file.isEmpty()) {
+                String imageUrl = saveImage(file);
+                accountDTO.setImageUrl(imageUrl);
+            }
+
+            AccountDTO updatedAccount = accountService.updateAccount(id, accountDTO);
+            return new ResponseEntity<>(updatedAccount, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // method to delete an account through id
@@ -94,21 +112,17 @@ public class AccountController {
         return new ResponseEntity<>(accountDTO, HttpStatus.OK);
     }
 
-
-    @PostMapping("/upload")
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
-        try {
-            String fileName = file.getOriginalFilename();
-            String uploadDir = "uploads/";
-            Path path = Paths.get(uploadDir + fileName);
-            Files.createDirectories(path.getParent());
-            Files.write(path, file.getBytes());
-            return ResponseEntity.ok("Image uploaded successfully: " + fileName);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload image");
-        }
+    // method to transfer from one account to another
+    private String saveImage(MultipartFile file) throws IOException {
+        String fileName = file.getOriginalFilename();
+        String uploadDir = "uploads/";
+        Path path = Paths.get(uploadDir + fileName);
+        Files.createDirectories(path.getParent());
+        Files.write(path, file.getBytes());
+        return "/api/banking/images/" + fileName;
     }
 
+    // method to get the image
     @GetMapping("/images/{imageName}")
     public ResponseEntity<Resource> getImage(@PathVariable String imageName) {
         try {
@@ -125,6 +139,5 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 
 }
