@@ -3,8 +3,6 @@ package com.ebaad.banking_application.service;
 import com.ebaad.banking_application.dto.AccountDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -17,7 +15,7 @@ public interface AccountService {
 
     AccountDTO getAccountByName(String accountHolderName);
 
-    AccountDTO updateAccount(Long id, AccountDTO accountDTO);
+    AccountDTO updateAccount(Long id, AccountDTO accountDTO, MultipartFile imageFile);
 
     AccountDTO deleteAccount(Long id);
 

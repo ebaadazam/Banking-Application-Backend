@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.ebaad.banking_application.exception.BankingExceptions.*;
@@ -64,7 +65,7 @@ public class AccountServiceImpl implements AccountService {
 
     // method to update an account through id
     @Override
-    public AccountDTO updateAccount(Long id, AccountDTO accountDTO) {
+    public AccountDTO updateAccount(Long id, AccountDTO accountDTO, MultipartFile imageFile) {
         Account account = accountRepository
                 .findById(id)
                 .orElseThrow(() -> new InvalidIdException("Incorrect ID is given or ID doesn't exists!"));
@@ -82,6 +83,17 @@ public class AccountServiceImpl implements AccountService {
         account.setDesignation(accountDTO.getDesignation());
         account.setAddress(accountDTO.getAddress());
         account.setGender(accountDTO.getGender());
+
+        // Convert image to Base64 and store as a string
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                byte[] imageBytes = imageFile.getBytes();
+                String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                account.setImageUrl(base64Image);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to process image", e);
+            }
+        }
 
         // For DebitCard
         if (accountDTO.getDebitCard() != null) {

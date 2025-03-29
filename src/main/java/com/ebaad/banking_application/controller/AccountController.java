@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/banking")
@@ -78,7 +79,7 @@ public class AccountController {
                 accountDTO.setImageUrl(imageUrl);
             }
 
-            AccountDTO updatedAccount = accountService.updateAccount(id, accountDTO);
+            AccountDTO updatedAccount = accountService.updateAccount(id, accountDTO, file);
             return new ResponseEntity<>(updatedAccount, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,14 +113,16 @@ public class AccountController {
         return new ResponseEntity<>(accountDTO, HttpStatus.OK);
     }
 
-    // method to transfer from one account to another
+    // method to save an image
     private String saveImage(MultipartFile file) throws IOException {
-        String fileName = file.getOriginalFilename();
+        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename(); // Generate unique filename
         String uploadDir = "uploads/";
         Path path = Paths.get(uploadDir + fileName);
-        Files.createDirectories(path.getParent());
-        Files.write(path, file.getBytes());
-        return "/api/banking/images/" + fileName;
+
+        Files.createDirectories(path.getParent()); // Ensure directory exists
+        Files.write(path, file.getBytes()); // Save file
+
+        return "/api/banking/images/" + fileName; // Return unique image URL
     }
 
     // method to get the image
